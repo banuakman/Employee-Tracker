@@ -17,11 +17,10 @@ CREATE TABLE role (
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
     department_id INT NULL,
-    PRIMARY KEY (id),
     CONSTRAINT fk_department_id
         FOREIGN KEY (department_id)
         REFERENCES department(id)
-            ON UPDATE CASCADE
+    PRIMARY KEY (id)
 );
 
 -- EMPLOYEE
@@ -31,13 +30,14 @@ CREATE TABLE employee (
     last_name VARCHAR(30) NOT NULL,
     manager_id INT NULL,
     role_id INT NULL,
-    PRIMARY KEY (id),
     CONSTRAINT fk_role_id
         FOREIGN KEY (role_id)
         REFERENCES role(id)
     CONSTRAINT fk_manager_id
         FOREIGN KEY (manager_id)
-        REFERENCES employee(id),
+        REFERENCES employee(id)
+            ON DELETE SET NULL,
+    PRIMARY KEY (id)
 );
 
 
