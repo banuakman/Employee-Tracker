@@ -20,7 +20,7 @@ const initQs = [
                "View all departments",
                "Add a department",
                "View all roles",
-               "Add role",
+               "Add a role",
                "Exit"
            ]
    }
@@ -35,8 +35,31 @@ CFonts.say ("Employee Tracker", {
 
 connection.connect((err) => {
     if (err) throw err;
-    console.log(`connected as id ${connection.threadId}`);
+    console.log(`connected SQL as id ${connection.threadId}`);
     connection.end();
   });
 
+//View all employees
+
+//View all employees by department",
+//View all employees by manager",
+//Add an employee",
+//Remove an employee",
+//Update employee role",
+//Update employee manager",
+//View all departments",
+//Add a department",
+//View all roles",
+//Add a role",
+
 // USER INTERACTIONS ==========================
+inquirer
+  .prompt(initQs)
+  // Write a ReadMe file using the amswers to the prompts.
+  .then(userResponse => {
+    console.log("selected:", userResponse.initialSelection);
+  })
+  // If there is an error, write an error to the console.
+  .catch(err => {
+    console.error(err);
+  })
