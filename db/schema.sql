@@ -35,7 +35,9 @@ CREATE TABLE employee (
     CONSTRAINT fk_role_id
         FOREIGN KEY (role_id)
         REFERENCES role(id)
-            ON UPDATE CASCADE,
+    CONSTRAINT fk_manager_id
+        FOREIGN KEY (manager_id)
+        REFERENCES employee(id),
 );
 
 
