@@ -19,7 +19,7 @@ CREATE TABLE role (
     department_id INT NULL,
     CONSTRAINT fk_department_id
         FOREIGN KEY (department_id)
-        REFERENCES department(id)
+        REFERENCES department(id),
     PRIMARY KEY (id)
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE employee (
     role_id INT NULL,
     CONSTRAINT fk_role_id
         FOREIGN KEY (role_id)
-        REFERENCES role(id)
+        REFERENCES role(id),
     CONSTRAINT fk_manager_id
         FOREIGN KEY (manager_id)
         REFERENCES employee(id)
