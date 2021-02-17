@@ -39,3 +39,7 @@ CREATE TABLE employee (
 );
 
 
+--QUERY FOR ALL EMPLOYEE LIST
+SELECT first_name, last_name, role.title, role.salary FROM employee
+INNER JOIN role ON role.id = employee.role_id
+INNER JOIN department ON department.id = role.department_id;
