@@ -18,7 +18,7 @@ const initQs = [
             //    "Update employee role",
             //    "Update employee manager",
                 "View all departments",
-            //    "Add a department",
+                "Add a department",
                 "View all roles",
             //    "Add a role",
                 "Exit"
@@ -59,8 +59,8 @@ const processSelected = (actionSelected) => {
         //     break;
         case "View all departments": viewAllDepartments();
              break;
-        // case "Add a department": addDepartment();
-        //     break;
+        case "Add a department": addDepartment();
+             break;
         case "View all roles": viewAllRoles();
              break;
         // case "Add a role": addRole();
@@ -96,27 +96,49 @@ const viewAllEmployees = () => {
 };
 
 //View all employees by department",
+
 //View all employees by manager",
+
 //Add an employee",
 const addEmployee = () => {
 
 }
 //Remove an employee",
+
 //Update employee role",
+
 //Update employee manager",
+
 //View all departments",
 const viewAllDepartments = () => {
     console.log('Now viewing all departments...\n');
     const query = `SELECT * FROM department`;
-        
+    
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         start();
     });
-
 }
+
 //Add a department",
+const addDepartment = () => {
+    const query = `INSERT INTO department SET ?`;
+    inquirer
+        .prompt({
+            name: "department",
+            type: "input",
+            message: "What department would you like to add?",
+        })
+      .then((answer) => {
+            connection.query(query, { name: answer.department }, (err) => {
+            if (err) throw err;
+            console.log("You added a department!");
+            start();
+            });
+        });
+}
+
 //View all roles",
 const viewAllRoles = () => {
     console.log('Now viewing all roles...\n');
