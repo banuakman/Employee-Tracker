@@ -107,7 +107,7 @@ const addEmployee = () => {
 //View all departments",
 const viewAllDepartments = () => {
     console.log('Now viewing all departments...\n');
-    const query = `SELECT title, salary FROM role`;
+    const query = `SELECT * FROM department`;
         
     connection.query(query, (err, res) => {
         if (err) throw err;
