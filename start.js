@@ -27,20 +27,53 @@ const initQs = [
 ]
 
 // FUNCTIONS ==================================
-
+// Welcome
 CFonts.say ("Employee Tracker", {
     font: 'pallet',
     colors: ['greenBright', 'gray']
 })
 
+//SQL Connection
 connection.connect((err) => {
     if (err) throw err;
-    console.log(`connected SQL as id ${connection.threadId}`);
-    connection.end();
+    console.log(`\nconnected SQL as id ${connection.threadId}\n`);
   });
 
-//View all employees
+//Process Inital Selection
+const processSelected = (actionSelected) => {
+    console.log(actionSelected);
 
+    switch (actionSelected) {
+        case "View all employees": viewAllEmployees();
+            break;
+        case "View all employees by department": viewEmployeesByDept()
+            break;
+        case "View all employees by manager": viewEmployeesByManager();
+            break;
+        case "Add an employee": addEmployee();
+            break;
+        case "Remove an employee": removeEmployee();
+            break;
+        case "Update employee role": updateEmployeeRole();
+            break;
+        case "Update employee manager": updateManager();
+            break;
+        case "View all departments": viewAllDepartments();
+            break;
+        case "Add a department": addDepartment();
+            break;
+        case "View all roles": viewRoles();
+            break;
+        case "Add a role": addRole();
+            break;
+        case "Exit":
+            console.log("\n Thank you for using Employee Tracker \n");
+            connection.end();
+            break;
+    }
+};
+
+//View all employees
 //View all employees by department",
 //View all employees by manager",
 //Add an employee",
@@ -57,7 +90,7 @@ inquirer
   .prompt(initQs)
   // Write a ReadMe file using the amswers to the prompts.
   .then(userResponse => {
-    console.log("selected:", userResponse.initialSelection);
+    processSelected(userResponse.initialSelection);
   })
   // If there is an error, write an error to the console.
   .catch(err => {
