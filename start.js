@@ -1,9 +1,9 @@
-// DEPENDENCIES ================================
+// DEPENDENCIES ===================================================
 const inquirer = require('inquirer');
 const connection = require("./db/connection.js");
 const CFonts = require('cfonts');
 
-// DATA =======================================
+// DATA ===========================================================
 const initQs = [
     // Menu items
     {
@@ -13,20 +13,20 @@ const initQs = [
        choices: ["View all employees",
             //    "View all employees by department",
             //    "View all employees by manager",
-            //    "Add an employee",
+                "Add a new employee",
             //    "Remove an employee",
             //    "Update employee role",
             //    "Update employee manager",
-            //    "View all departments",
+                "View all departments",
             //    "Add a department",
-            //    "View all roles",
+                "View all roles",
             //    "Add a role",
-               "Exit"
+                "Exit"
            ]
    }
 ]
 
-// FUNCTIONS ==================================
+// FUNCTIONS ======================================================
 // Welcome
 CFonts.say ("Employee Tracker", {
     font: 'pallet',
@@ -36,13 +36,12 @@ CFonts.say ("Employee Tracker", {
 //SQL Connection
 connection.connect((err) => {
     if (err) throw err;
-    console.log(`\nconnected SQL as id ${connection.threadId}\n`);
+    // console.log(`\nconnected SQL as id ${connection.threadId}\n`);
   });
 
 //Process Inital Selection
 const processSelected = (actionSelected) => {
     console.log(actionSelected);
-
     switch (actionSelected) {
         case "View all employees": viewAllEmployees();
             break;
@@ -50,20 +49,20 @@ const processSelected = (actionSelected) => {
         //     break;
         // case "View all employees by manager": viewEmployeesByManager();
         //     break;
-        // case "Add an employee": addEmployee();
-        //     break;
+           case "Add a new employee": addEmployee();
+               break;
         // case "Remove an employee": removeEmployee();
         //     break;
         // case "Update employee role": updateEmployeeRole();
         //     break;
         // case "Update employee manager": updateManager();
         //     break;
-        // case "View all departments": viewAllDepartments();
-        //     break;
+        case "View all departments": viewAllDepartments();
+             break;
         // case "Add a department": addDepartment();
         //     break;
-        // case "View all roles": viewRoles();
-        //     break;
+        case "View all roles": viewAllRoles();
+             break;
         // case "Add a role": addRole();
         //     break;
         case "Exit":
@@ -99,15 +98,39 @@ const viewAllEmployees = () => {
 //View all employees by department",
 //View all employees by manager",
 //Add an employee",
+const addEmployee = () => {
+
+}
 //Remove an employee",
 //Update employee role",
 //Update employee manager",
 //View all departments",
+const viewAllDepartments = () => {
+    console.log('Now viewing all departments...\n');
+    const query = `SELECT title, salary FROM role`;
+        
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        start();
+    });
+
+}
 //Add a department",
 //View all roles",
+const viewAllRoles = () => {
+    console.log('Now viewing all roles...\n');
+    const query = `SELECT title, salary FROM role`;
+    
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        start();
+    });
+}
 //Add a role",
 
-// USER INTERACTIONS ==========================
+// USER INTERACTIONS ==============================================
 function start() {
     inquirer
   .prompt(initQs)
