@@ -20,7 +20,7 @@ const initQs = [
                 "View all departments",
                 "Add a department",
                 "View all roles",
-            //    "Add a role",
+                "Add a role",
                 "Exit"
            ]
    }
@@ -33,13 +33,13 @@ CFonts.say ("Employee Tracker", {
     colors: ['greenBright', 'gray']
 })
 
-//SQL Connection
+// SQL Connection
 connection.connect((err) => {
     if (err) throw err;
     // console.log(`\nconnected SQL as id ${connection.threadId}\n`);
   });
 
-//Process Inital Selection
+// Process Inital Selection
 const processSelected = (actionSelected) => {
     console.log(actionSelected);
     switch (actionSelected) {
@@ -49,8 +49,8 @@ const processSelected = (actionSelected) => {
         //     break;
         // case "View all employees by manager": viewEmployeesByManager();
         //     break;
-           case "Add a new employee": addEmployee();
-               break;
+        case "Add a new employee": addEmployee();
+           break;
         // case "Remove an employee": removeEmployee();
         //     break;
         // case "Update employee role": updateEmployeeRole();
@@ -63,8 +63,8 @@ const processSelected = (actionSelected) => {
              break;
         case "View all roles": viewAllRoles();
              break;
-        // case "Add a role": addRole();
-        //     break;
+        case "Add a role": addRole();
+             break;
         case "Exit":
             console.log("\n Thank you for using Employee Tracker \n");
             connection.end();
@@ -72,7 +72,7 @@ const processSelected = (actionSelected) => {
     }
 };
 
-//View all employees
+// View all employees
 const viewAllEmployees = () => {
     console.log('Selecting all employees...\n');
     const query = `SELECT employee.first_name AS "FIRST NAME",
@@ -95,25 +95,24 @@ const viewAllEmployees = () => {
     });
 };
 
-//View all employees by department",
+// View all employees by department
 
-//View all employees by manager",
+// View all employees by manager
 
-//Add an employee",
+// Add an employee
 const addEmployee = () => {
 
 }
-//Remove an employee",
+// Remove an employee
 
-//Update employee role",
+// Update employee role
 
-//Update employee manager",
+// Update employee manager
 
-//View all departments",
+// View all departments
 const viewAllDepartments = () => {
     console.log('Now viewing all departments...\n');
     const query = `SELECT * FROM department`;
-    
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -121,7 +120,7 @@ const viewAllDepartments = () => {
     });
 }
 
-//Add a department",
+//Add a department
 const addDepartment = () => {
     const query = `INSERT INTO department SET ?`;
     inquirer
@@ -133,24 +132,55 @@ const addDepartment = () => {
       .then((answer) => {
             connection.query(query, { name: answer.department }, (err) => {
             if (err) throw err;
-            console.log("You added a department!");
+            console.log("You created", answer.department, "department successfully!");
             start();
             });
         });
 }
 
-//View all roles",
+//View all roles
 const viewAllRoles = () => {
     console.log('Now viewing all roles...\n');
     const query = `SELECT title, salary FROM role`;
-    
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
         start();
     });
 }
-//Add a role",
+// Add a role
+const addRole = () => {
+    const query = `SELECT * FROM department`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        allDepartments = res.map((results) => results.name);
+
+        inquirer
+            .prompt([
+                { type: "input",
+                message: "What is the name of the new title?",
+                name: "newTitle",
+                },
+                { type: "input",
+                message: "What is the salary of the new position?",
+                name: "newSalary",
+                },
+                { type: "list",
+                name: "department",
+                message: "Select the department to add the new title",
+                choices: allDepartments,
+                },
+            ])
+            .then(function(answer) {
+                connection.query(
+                `INSERT INTO role(Title, Salary, department_id) VALUES 
+                ("${answer.newTitle}", "${answer.newSalary}", (SELECT id FROM department WHERE name = "${answer.department}"));`
+                );
+                console.log("You created", answer.newTitle, "in", answer.department, "department successfully!");
+                start();
+            });
+    }); 
+}
 
 // USER INTERACTIONS ==============================================
 function start() {
