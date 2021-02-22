@@ -4,6 +4,18 @@ const connection = require("./db/connection.js");
 const CFonts = require('cfonts');
 
 // DATA ===========================================================
+let roleResults;
+let roleList = [];
+let chosenRole;
+
+let managerResults;
+let managerList = ["None"];
+let chosenManager = null;
+
+let employeeResults;
+let employeeList = [];
+let chosenEmployee = null;
+
 const initQs = [
     {
        type: "list",
@@ -12,13 +24,12 @@ const initQs = [
        choices: ["View all employees",
                  "View all departments",
                  "View all roles",
-            //   "View all employees by department",
             //   "View all employees by manager",
                   "Add a new employee",
             //    "Remove an employee",
                   "Add a new department",
                   "Add a new role",
-            //    "Update employee role",
+                  "Update employee role",
             //    "Update employee manager",
                   "Exit"
                 ]
@@ -60,8 +71,8 @@ const processSelected = (actionSelected) => {
              break;
         case "Add a role": addRole();
              break;
-        // case "Update employee role": updateEmployeeRole();
-        //     break;
+        case "Update employee role": updateEmployeeRole();
+             break;
         // case "Update employee manager": updateManager();
         //     break;
         case "Exit":
@@ -70,6 +81,34 @@ const processSelected = (actionSelected) => {
             break;
     }
 };
+// Role List
+connection.query(`SELECT id, title FROM role ORDER BY title`,
+    (err, results) => {
+    if (err) throw err;
+    roleResults = results;
+    results.forEach(({title}) => {
+        roleList.push(title);
+    });
+});
+
+// Employee List
+connection.query(`SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`, (err, results) => {
+    if (err) throw err;
+    employeeResults = results;
+    results.forEach(({name}) => {
+        employeeList.push(name);
+    });
+});
+
+// Manager List
+connection.query(`SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
+    (err, results) => {
+        if (err) throw err;
+        managerResults = results;
+        results.forEach(({name}) => {
+        managerList.push(name);
+    });
+});
 
 // View all employees
 const viewAllEmployees = () => {
@@ -100,62 +139,38 @@ const viewAllEmployees = () => {
 
 // Add an employee
 const addEmployee = () => {
-    let roleResults;
-    let roleList = [];
-    connection.query(`SELECT id, title FROM role ORDER BY title`, (err, results) => {
-        if (err) throw err;
-        roleResults = results;
-        results.forEach(({title}) => {
-            roleList.push(title);
-        });
-    });
-
-    let managerResults;
-    let managerList = ["None"];
-    connection.query(`SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
-        (err, results) => {
-            if (err) throw err;
-            managerResults = results;
-            results.forEach(({name}) => {
-            managerList.push(name);
-        });
-    });
-
     inquirer
         .prompt([
         {
             name: "first_name",
             type: "input",
-            message: "What is the employee's first name?",
+            message: "What is the new employee's first name?",
         },
         {
             name: "last_name",
             type: "input",
-            message: "What is the employee's last name?",
+            message: "What is the new employee's last name?",
         },
         {
             name: "title",
             type: "list",
             choices: roleList,
-            message: "Select the employee's role.",
+            message: "Select the new employee's role.",
         },
         {
             name: "manager",
             type: "list",
             choices: managerList,
-            message: "Select the employee's manager.",
+            message: "Select the new employee's manager.",
         },
-
     ])
     .then((answer) => {
-        let chosenRole;
         roleResults.forEach((role) => {
             if (role.title === answer.title) {
                 chosenRole = role.id;
             }
         });
 
-        let chosenManager = null;
         if (answer.manager != "None") {
             managerResults.forEach((manager) => {
                 if ((manager.name === answer.manager)) {
@@ -183,8 +198,54 @@ const addEmployee = () => {
 // Remove an employee
 
 // Update employee role
+const updateEmployeeRole = () => {
+   const updateQs = [
+        {
+        name: "employee",
+        type: "list",
+        message: "Which Employee would you like to update?",
+        choices: employeeList,
+        },
+        {
+        name: "title",
+        type: "list",
+        message: "Select the employee's new title.",
+        choices: roleList,
+        },
+    ]
+    inquirer
+       .prompt(updateQs).then((answer) => {
+       // Find the chosen role object in order to get the id.
+       let chosenRole;
 
+       roleResults.forEach((role) => {
+           if (role.title === answer.title) {
+               chosenRole = role.id;
+           }
+       });
+
+       // Find the chosen employee object by matching first name and last name in order to get the id.
+       employeeResults.forEach((employee) => {
+           if ((employee.name === answer.employee)) {
+               chosenEmployee = employee.id;
+           }
+       });
+
+       connection.query('UPDATE employee SET ? WHERE ?',
+           [
+               { role_id: chosenRole, },
+               { id: chosenEmployee, }
+           ],
+           (err) => {
+                if (err) throw err;
+                console.log(answer.employee,"'s role is changed to", answer.title,"\n");
+                start();
+           }
+       );
+   });
+};
 // Update employee manager
+
 
 // View all departments
 const viewAllDepartments = () => {
@@ -225,6 +286,7 @@ const viewAllRoles = () => {
         start();
     });
 }
+
 // Add a role
 const addRole = () => {
     const query = `SELECT * FROM department`;
