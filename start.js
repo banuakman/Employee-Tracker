@@ -5,29 +5,28 @@ const CFonts = require('cfonts');
 
 // DATA ===========================================================
 const initQs = [
-    // Menu items
     {
        type: "list",
        name: "initialSelection",
        message: "What would you like to do?",
        choices: ["View all employees",
-            //    "View all employees by department",
-            //    "View all employees by manager",
-                "Add a new employee",
+                 "View all departments",
+                 "View all roles",
+            //   "View all employees by department",
+            //   "View all employees by manager",
+                  "Add a new employee",
             //    "Remove an employee",
+                  "Add a new department",
+                  "Add a new role",
             //    "Update employee role",
             //    "Update employee manager",
-                "View all departments",
-                "Add a department",
-                "View all roles",
-                "Add a role",
-                "Exit"
-           ]
+                  "Exit"
+                ]
    }
 ]
 
 // FUNCTIONS ======================================================
-// Welcome
+// Welcome banner
 CFonts.say ("Employee Tracker", {
     font: 'pallet',
     colors: ['greenBright', 'gray']
@@ -45,26 +44,26 @@ const processSelected = (actionSelected) => {
     switch (actionSelected) {
         case "View all employees": viewAllEmployees();
             break;
+        case "View all departments": viewAllDepartments();
+            break;
+        case "View all roles": viewAllRoles();
+            break;
         // case "View all employees by department": viewEmployeesByDept()
         //     break;
         // case "View all employees by manager": viewEmployeesByManager();
         //     break;
         case "Add a new employee": addEmployee();
-           break;
+            break;
         // case "Remove an employee": removeEmployee();
         //     break;
+        case "Add a department": addDepartment();
+             break;
+        case "Add a role": addRole();
+             break;
         // case "Update employee role": updateEmployeeRole();
         //     break;
         // case "Update employee manager": updateManager();
         //     break;
-        case "View all departments": viewAllDepartments();
-             break;
-        case "Add a department": addDepartment();
-             break;
-        case "View all roles": viewAllRoles();
-             break;
-        case "Add a role": addRole();
-             break;
         case "Exit":
             console.log("\n Thank you for using Employee Tracker \n");
             connection.end();
@@ -101,8 +100,86 @@ const viewAllEmployees = () => {
 
 // Add an employee
 const addEmployee = () => {
+    let roleResults;
+    let roleList = [];
+    connection.query(`SELECT id, title FROM role ORDER BY title`, (err, results) => {
+        if (err) throw err;
+        roleResults = results;
+        results.forEach(({title}) => {
+            roleList.push(title);
+        });
+    });
 
-}
+    let managerResults;
+    let managerList = ["None"];
+    connection.query(`SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
+        (err, results) => {
+            if (err) throw err;
+            managerResults = results;
+            results.forEach(({name}) => {
+            managerList.push(name);
+        });
+    });
+
+    inquirer
+        .prompt([
+        {
+            name: "first_name",
+            type: "input",
+            message: "What is the employee's first name?",
+        },
+        {
+            name: "last_name",
+            type: "input",
+            message: "What is the employee's last name?",
+        },
+        {
+            name: "title",
+            type: "list",
+            choices: roleList,
+            message: "Select the employee's role.",
+        },
+        {
+            name: "manager",
+            type: "list",
+            choices: managerList,
+            message: "Select the employee's manager.",
+        },
+
+    ])
+    .then((answer) => {
+        let chosenRole;
+        roleResults.forEach((role) => {
+            if (role.title === answer.title) {
+                chosenRole = role.id;
+            }
+        });
+
+        let chosenManager = null;
+        if (answer.manager != "None") {
+            managerResults.forEach((manager) => {
+                if ((manager.name === answer.manager)) {
+                    chosenManager = manager.id;
+                }
+            });
+        };
+        
+        connection.query(
+            'INSERT INTO employee SET ?',
+            {
+                last_name: answer.last_name,
+                first_name: answer.first_name,
+                role_id: chosenRole,
+                manager_id: chosenManager,
+            },
+            (err) => {
+                if (err) throw err;
+                console.log("\nThe employee", answer.first_name, answer.last_name, "was created successfully!\n");
+                start();
+            }
+        );
+    });
+};
 // Remove an employee
 
 // Update employee role
@@ -171,7 +248,7 @@ const addRole = () => {
                 choices: allDepartments,
                 },
             ])
-            .then(function(answer) {
+            .then((answer) => {
                 connection.query(
                 `INSERT INTO role(Title, Salary, department_id) VALUES 
                 ("${answer.newTitle}", "${answer.newSalary}", (SELECT id FROM department WHERE name = "${answer.department}"));`
