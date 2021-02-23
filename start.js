@@ -23,8 +23,9 @@ const initQs = [
        message: "What would you like to do?",
        choices: ["View all employees",
                  "View all departments",
-                 "View all roles",
-            //   "View all employees by manager",
+                 "View all roles",    
+                 "View all employees ordered by department",
+                 "View all employees ordered by manager",
                   "Add a new employee",
             //    "Remove an employee",
                   "Add a new department",
@@ -59,10 +60,10 @@ const processSelected = (actionSelected) => {
             break;
         case "View all roles": viewAllRoles();
             break;
-        // case "View all employees by department": viewEmployeesByDept()
-        //     break;
-        // case "View all employees by manager": viewEmployeesByManager();
-        //     break;
+        case "View all employees ordered by department": viewEmployeesByDept()
+             break;
+        case "View all employees ordered by manager": viewEmployeesByManager();
+             break;
         case "Add a new employee": addEmployee();
             break;
         // case "Remove an employee": removeEmployee();
@@ -134,8 +135,48 @@ const viewAllEmployees = () => {
 };
 
 // View all employees by department
+const viewEmployeesByDept = () => {
+    console.log('\nSelecting all employees grouped by department...\n');
+    const query = `SELECT employee.first_name AS "FIRST NAME",
+    employee.last_name AS "LAST NAME",
+    role.title AS "TITLE",
+    department.name AS "DEPARTMENT",
+    role.salary AS "SALARY",
+    CONCAT(Manager.first_name, ' ', Manager.last_name) AS "MANAGER"
+    FROM employee
+    INNER JOIN role ON role.id = employee.role_id
+    INNER JOIN department ON department.id = role.department_id
+    LEFT JOIN employee AS Manager ON employee.manager_id = Manager.id
+    ORDER BY department.name;`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        // Log all results of the SELECT statement.
+        console.table(res);
+        start();
+    });
+};
 
 // View all employees by manager
+const viewEmployeesByManager = () => {
+    console.log('\nSelecting all employees grouped by department...\n');
+    const query = `SELECT employee.first_name AS "FIRST NAME",
+    employee.last_name AS "LAST NAME",
+    role.title AS "TITLE",
+    department.name AS "DEPARTMENT",
+    role.salary AS "SALARY",
+    CONCAT(Manager.first_name, ' ', Manager.last_name) AS "MANAGER"
+    FROM employee
+    INNER JOIN role ON role.id = employee.role_id
+    INNER JOIN department ON department.id = role.department_id
+    LEFT JOIN employee AS Manager ON employee.manager_id = Manager.id
+    ORDER BY Manager.last_name, Manager.first_name;`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        // Log all results of the SELECT statement.
+        console.table(res);
+        start();
+    });
+};
 
 // Add an employee
 const addEmployee = () => {
