@@ -26,13 +26,13 @@ const initQs = [
                  "View all roles",    
                  "View all employees ordered by department",
                  "View all employees ordered by manager",
-                  "Add a new employee",
-            //    "Remove an employee",
-                  "Add a new department",
-                  "Add a new role",
-                  "Update employee role",
-            //    "Update employee manager",
-                  "Exit"
+                 "Add a new employee",
+                 "Remove an employee",
+                 "Add a new department",
+                 "Add a new role",
+                 "Update employee role",
+            //   "Update employee manager",
+                 "Exit"
                 ]
    }
 ]
@@ -66,8 +66,8 @@ const processSelected = (actionSelected) => {
              break;
         case "Add a new employee": addEmployee();
             break;
-        // case "Remove an employee": removeEmployee();
-        //     break;
+        case "Remove an employee": removeEmployee();
+             break;
         case "Add a department": addDepartment();
              break;
         case "Add a role": addRole();
@@ -237,6 +237,39 @@ const addEmployee = () => {
     });
 };
 // Remove an employee
+const removeEmployee = () => {
+    inquirer
+        // Prompt for the employee name.
+    .prompt([
+        {
+            name: "employee",
+            type: "list",
+            choices: employeeList,
+            message: "Which employee do you want to delete?",
+        },
+    ])
+    .then((answer) => {
+            // Locate the chosen employee object
+            employeeResults.forEach((employee) => {
+                if ((employee.name === answer.employee)) {
+                    chosenEmployee = employee.id;
+                }
+    });
+            // Delete the chosen employee with the id.
+            connection.query(
+                'DELETE FROM employee WHERE ?',
+                {
+                    id: chosenEmployee,
+                },
+                (err) => {
+                    if (err) throw err;
+                    console.log('The employee is removed successfully!');
+                    // Display the main menu.
+                    start();
+                }
+            );
+        });
+};
 
 // Update employee role
 const updateEmployeeRole = () => {
@@ -285,6 +318,7 @@ const updateEmployeeRole = () => {
        );
    });
 };
+
 // Update employee manager
 
 
