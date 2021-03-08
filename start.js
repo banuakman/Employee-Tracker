@@ -91,41 +91,46 @@ const processSelected = (actionSelected) => {
   }
 };
 // Role List
-connection.query(
-  `SELECT id, title FROM role ORDER BY title`,
-  (err, results) => {
-    if (err) throw err;
-    roleResults = results;
-    results.forEach(({ title }) => {
-      roleList.push(title);
-    });
-  }
-);
+const updateRoleList = () => {
+  connection.query(
+    `SELECT id, title FROM role ORDER BY title`,
+    (err, results) => {
+      if (err) throw err;
+      roleResults = results;
+      results.forEach(({ title }) => {
+        roleList.push(title);
+      });
+    }
+  );
+};
 
 // Employee List
-connection.query(
-  `SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
-  (err, results) => {
-    if (err) throw err;
-    employeeResults = results;
-    results.forEach(({ name }) => {
-      employeeList.push(name);
-    });
-  }
-);
+const updateEmployeeList = () => {
+  connection.query(
+    `SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
+    (err, results) => {
+      if (err) throw err;
+      employeeResults = results;
+      results.forEach(({ name }) => {
+        employeeList.push(name);
+      });
+    }
+  );
+};
 
 // Manager List
-connection.query(
-  `SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
-  (err, results) => {
-    if (err) throw err;
-    managerResults = results;
-    results.forEach(({ name }) => {
-      managerList.push(name);
-    });
-  }
-);
-
+const updateManagerList = () => {
+  connection.query(
+    `SELECT id, CONCAT(last_name, ', ', first_name) AS name FROM employee ORDER BY last_name, first_name`,
+    (err, results) => {
+      if (err) throw err;
+      managerResults = results;
+      results.forEach(({ name }) => {
+        managerList.push(name);
+      });
+    }
+  );
+};
 // View all employees
 const viewAllEmployees = () => {
   console.log("Selecting all employees...\n");
@@ -251,6 +256,7 @@ const addEmployee = () => {
             answer.last_name,
             "was created successfully!\n"
           );
+          updateEmployeeList();
           start();
         }
       );
@@ -335,6 +341,7 @@ const updateEmployeeRole = () => {
           answer.title,
           "\n"
         );
+        updateManagerList();
         start();
       }
     );
@@ -423,6 +430,7 @@ const addRole = () => {
           answer.department,
           "department successfully!"
         );
+        updateRoleList();
         start();
       });
   });
@@ -441,5 +449,7 @@ function start() {
       console.error(err);
     });
 }
-
+updateRoleList();
+updateEmployeeList();
+updateManagerList();
 start();
