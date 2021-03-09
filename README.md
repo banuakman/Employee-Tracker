@@ -34,7 +34,7 @@ This Employee Tracker Application is a **C**ontent **M**anagement **S**ystem int
 ## Usage
 
 The following image show the web application's appearance and functionality:
-![Screen shot of Employee Tracker CRM ](./assets/ScreenShot_employeetracker.gif)
+![Screen shot of Employee Tracker CRM ](./images/ScreenShot_employeetracker.gif)
 
 ```
 Build a command-line application that allows the user to:
