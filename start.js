@@ -291,6 +291,7 @@ const removeEmployee = () => {
           if (err) throw err;
           console.log("The employee is removed successfully!");
           // Display the main menu.
+          updateEmployeeList();
           start();
         }
       );
